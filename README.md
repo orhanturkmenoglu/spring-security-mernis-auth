@@ -7,7 +7,9 @@ Bu proje, Türkiye Cumhuriyeti vatandaşlarının kimlik doğrulamasını sağla
 
 📁 Projeyi Çalıştırmak
 > git clone https://github.com/orhanturkmenoglu/spring-security-mernis-auth.git
+
 > cd spring-security-mernis-auth
+
 > mvn clean install
 
 
