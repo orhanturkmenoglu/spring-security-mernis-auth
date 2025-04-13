@@ -21,7 +21,7 @@ public class DEAKPSPublicSoap
 {
     private String url = "https://tckimlik.nvi.gov.tr/Service/KPSPublic.asmx";
     private HashMap< String,String> httpHeaders = new HashMap< String,String>();
-    private boolean enableLogging = false;
+    private boolean enableLogging = true;
     private String userName=null;
     private String password=null;
     private DEAConnectionProvider connectionProvider=new DEAHttpConnectionProvider();

@@ -27,8 +27,10 @@ public interface DEAConnectionProvider
 
 class DEAHttpConnectionProvider implements DEAConnectionProvider{
 
-    public void prepareRequest(HttpURLConnection url,String requestBody, DEARequestResultHandler handler,String contentType ) throws java.lang.Exception {
-        OutputStreamWriter wr = new OutputStreamWriter(url.getOutputStream());
+    public void prepareRequest(HttpURLConnection connection, String requestBody, DEARequestResultHandler handler, String contentType) throws Exception {
+        connection.setDoOutput(true); // ✅ Bu satırı eklemen gerekiyor
+        connection.setRequestProperty("Content-Type", contentType); // (isteğe bağlı ama faydalı)
+        OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
         wr.write(requestBody);
         wr.flush();
     }

@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
+
 @Service
 public class AuthService {
 
@@ -50,9 +52,9 @@ public class AuthService {
         boolean isTcknValid;
         try {
             isTcknValid = mernisService.validateTCKN(
-                    Long.parseLong(loginRequestDto.getIdentityNumber()),
-                    loginRequestDto.getFirstName(),
-                    loginRequestDto.getLastName(),
+                    Long.valueOf(loginRequestDto.getIdentityNumber()),
+                    loginRequestDto.getFirstName().toUpperCase(new Locale("tr", "TR")),
+                    loginRequestDto.getLastName().toUpperCase(new Locale("tr", "TR")),
                     loginRequestDto.getBirthYear());
             log.info("T.C. Kimlik No dogrulandi.", loginRequestDto.getIdentityNumber());
         } catch (Exception e) {
