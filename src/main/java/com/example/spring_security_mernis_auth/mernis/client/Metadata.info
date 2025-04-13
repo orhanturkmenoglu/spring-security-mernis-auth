@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<EasyWSDL>
+  <Info>
+    <Version>9.3.3.2</Version>
+    <AccountType>Basic</AccountType>
+    <LibrariesFolder>easywsdl</LibrariesFolder>
+    <MainClass>DEAKPSPublicSoap</MainClass>
+  </Info>
+  <Settings>
+    <Url> https://tckimlik.nvi.gov.tr/Service/KPSPublic.asmx?WSDL</Url>
+    <ClassPrefix/>
+    <PackageName>com.example.spring_security_mernis_auth.mernis</PackageName>
+    <AddDocumentation>false</AddDocumentation>
+    <EnableAdvancedFeatures>true</EnableAdvancedFeatures>
+    <EnableMTOM>false</EnableMTOM>
+    <EncodeIllegalCharacters>true</EncodeIllegalCharacters>
+    <GenerateAsyncOperations>true</GenerateAsyncOperations>
+    <ImplementSerializable>false</ImplementSerializable>
+    <ImplementParcelable>false</ImplementParcelable>
+    <AddAnyCollection>false</AddAnyCollection>
+    <DateTimeSupport>Default</DateTimeSupport>
+    <Repackage/>
+    <GenerateHtmlDocumentation>false</GenerateHtmlDocumentation>
+    <AddDataSetSupport>false</AddDataSetSupport>
+    <PlatformType>JavaAndroidV2</PlatformType>
+    <Annotations>None</Annotations>
+    <AddLibraries>true</AddLibraries>
+    <GenerateGetSetMethods>false</GenerateGetSetMethods>
+    <DetectDictionaries>false</DetectDictionaries>
+  </Settings>
+  <Files>
+    <File>client/HWSRequestResultHandler.java~</File>
+    <File>DEABinaryObject.java</File>
+    <File>DEAConnectionProvider.java</File>
+    <File>DEADateTimeParser.java</File>
+    <File>DEAHelper.java</File>
+    <File>DEAKPSPublicSoap.java</File>
+    <File>DEAKPSPublicSoap12.java</File>
+    <File>DEARequestResultHandler.java</File>
+    <File>DEAResponseData.java</File>
+    <File>DEASoapException.java</File>
+    <File>DEAStandardDateTimeParser.java</File>
+    <File>service/MernisService.java</File>
+    <File>service/MernisService.java~</File>
+  </Files>
+  <Libraries/>
+</EasyWSDL>

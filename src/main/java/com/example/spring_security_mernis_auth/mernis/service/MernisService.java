@@ -1,6 +1,6 @@
 package com.example.spring_security_mernis_auth.mernis.service;
 
-import com.example.spring_security_mernis_auth.mernis.client.HWSKPSPublicSoap12;
+import com.example.spring_security_mernis_auth.mernis.client.DEAKPSPublicSoap;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
@@ -8,10 +8,11 @@ import java.util.Calendar;
 @Service
 public class MernisService {
 
-    private final HWSKPSPublicSoap12 mernisSoapClient;
+    private final DEAKPSPublicSoap mernisService;
+
 
     public MernisService() {
-        this.mernisSoapClient = new HWSKPSPublicSoap12();
+        this.mernisService = new DEAKPSPublicSoap();
     }
 
     public Boolean validateTCKN(Long identityNumber, String firstName, String lastName, int dateOfBirth) throws Exception {
@@ -36,6 +37,7 @@ public class MernisService {
             throw new IllegalArgumentException("Invalid birth year format.");
         }
 
-        return mernisSoapClient.TCKimlikNoDogrula(identityNumber, firstName, lastName, dateOfBirth);
+
+        return mernisService.TCKimlikNoDogrula(identityNumber, firstName, lastName, dateOfBirth);
     }
 }
