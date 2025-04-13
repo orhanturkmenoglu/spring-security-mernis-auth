@@ -1,6 +1,7 @@
 package com.example.spring_security_mernis_auth.mernis.service;
 
-import com.example.spring_security_mernis_auth.mernis.client.DEAKPSPublicSoap;
+
+import com.example.spring_security_mernis_auth.mernis.client.RGLKPSPublicSoap;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
@@ -8,11 +9,11 @@ import java.util.Calendar;
 @Service
 public class MernisService {
 
-    private final DEAKPSPublicSoap mernisService;
+    private final RGLKPSPublicSoap mernisService;
 
 
     public MernisService() {
-        this.mernisService = new DEAKPSPublicSoap();
+        this.mernisService = new RGLKPSPublicSoap();
     }
 
     public Boolean validateTCKN(Long identityNumber, String firstName, String lastName, int dateOfBirth) throws Exception {

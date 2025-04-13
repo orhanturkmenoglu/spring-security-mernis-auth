@@ -2,13 +2,20 @@ package com.example.spring_security_mernis_auth.service;
 
 import com.example.spring_security_mernis_auth.dto.LoginRequestDto;
 import com.example.spring_security_mernis_auth.dto.LoginResponseDto;
+import com.example.spring_security_mernis_auth.dto.UserRequestDto;
+import com.example.spring_security_mernis_auth.dto.UserResponseDto;
 import com.example.spring_security_mernis_auth.exception.InvalidTCKNException;
 import com.example.spring_security_mernis_auth.exception.UserAlreadyExistsException;
+import com.example.spring_security_mernis_auth.mapper.UserMapper;
 import com.example.spring_security_mernis_auth.mernis.service.MernisService;
 import com.example.spring_security_mernis_auth.model.User;
 import com.example.spring_security_mernis_auth.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,40 +30,33 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final Logger log = LoggerFactory.getLogger(AuthService.class);
+    private final AuthenticationManager authenticationManager;
 
-    public AuthService(MernisService mernisService, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+
+    public AuthService(MernisService mernisService, UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
         this.mernisService = mernisService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
     }
 
-    private User createUser(LoginRequestDto loginRequestDto) {
-
-        String encodedPassword = passwordEncoder.encode(loginRequestDto.getPassword());
-
-        User user = new User();
-        user.setUsername(loginRequestDto.getUsername());
+    private User createUser(UserRequestDto userRequestDto) {
+        String encodedPassword = passwordEncoder.encode(userRequestDto.getPassword());
+        User user = UserMapper.mapToUser(userRequestDto);
         user.setPassword(encodedPassword);
-        user.setFirstName(loginRequestDto.getFirstName());
-        user.setLastName(loginRequestDto.getLastName());
-        user.setBirthYear(loginRequestDto.getBirthYear());
-        user.setIdentityNumber(loginRequestDto.getIdentityNumber());
-        user.setRole(loginRequestDto.getRole());
 
         return user;
     }
 
-    public LoginResponseDto register(LoginRequestDto loginRequestDto) throws Exception {
+    public UserResponseDto register(UserRequestDto userRequestDto) throws Exception {
 
         boolean isTcknValid;
         try {
             isTcknValid = mernisService.validateTCKN(
-                    Long.valueOf(loginRequestDto.getIdentityNumber()),
-                    loginRequestDto.getFirstName().toUpperCase(new Locale("tr", "TR")),
-                    loginRequestDto.getLastName().toUpperCase(new Locale("tr", "TR")),
-                    loginRequestDto.getBirthYear());
-            log.info("T.C. Kimlik No dogrulandi.", loginRequestDto.getIdentityNumber());
+                    userRequestDto.getIdentityNumber(),
+                    userRequestDto.getFirstName().toUpperCase(new Locale("tr", "TR")),
+                    userRequestDto.getLastName().toUpperCase(new Locale("tr", "TR")),
+                    userRequestDto.getBirthYear());
         } catch (Exception e) {
             throw new InvalidTCKNException("T.C. Kimlik No doğrulaması sırasında bir hata oluştu.");
         }
@@ -65,14 +65,36 @@ public class AuthService {
             throw new InvalidTCKNException("T.C. Kimlik No geçerli değil.");
         }
 
-        if (userRepository.existsByUsername(loginRequestDto.getUsername())) {
+        if (userRepository.existsByUsername(userRequestDto.getUsername())) {
             throw new UserAlreadyExistsException("Bu kullanıcı adı zaten mevcut.");
         }
 
-        User user = createUser(loginRequestDto);
+        User user = createUser(userRequestDto);
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
-        return new LoginResponseDto("Kullanıcı başarıyla kaydedildi.");
+        return UserMapper.mapToUserResponseDto(savedUser);
+    }
+
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+
+        if (loginRequestDto.getUsername() == null || loginRequestDto.getPassword() == null) {
+            return new LoginResponseDto("Kullanıcı adı veya sifre bos olamaz.");
+        }
+
+        try {
+            Authentication authenticate = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword()));
+
+            if (!authenticate.isAuthenticated()) {
+                return new LoginResponseDto("Kullanıcı adı veya sifre yanlis.");
+            }
+
+            SecurityContextHolder.getContext().setAuthentication(authenticate);
+
+            return new LoginResponseDto("Kullanıcı girisi basarili.");
+        } catch (Exception e) {
+            return new LoginResponseDto("Kullanıcı adı veya sifre yanlis.");
+        }
     }
 }

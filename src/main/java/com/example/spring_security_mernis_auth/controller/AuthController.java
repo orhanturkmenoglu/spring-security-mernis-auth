@@ -2,6 +2,8 @@ package com.example.spring_security_mernis_auth.controller;
 
 import com.example.spring_security_mernis_auth.dto.LoginRequestDto;
 import com.example.spring_security_mernis_auth.dto.LoginResponseDto;
+import com.example.spring_security_mernis_auth.dto.UserRequestDto;
+import com.example.spring_security_mernis_auth.dto.UserResponseDto;
 import com.example.spring_security_mernis_auth.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,12 +24,17 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<LoginResponseDto> register(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+    public ResponseEntity<UserResponseDto> register(@RequestBody @Valid UserRequestDto userRequestDto) {
         try {
-            LoginResponseDto response = authService.register(loginRequestDto);
+            UserResponseDto response = authService.register(userRequestDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new LoginResponseDto(e.getMessage()));
+            return ResponseEntity.badRequest().body(new UserResponseDto());
         }
+    }
+
+    @PostMapping("/login")
+    public LoginResponseDto login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+        return authService.login(loginRequestDto);
     }
 }

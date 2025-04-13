@@ -1,42 +1,31 @@
-package com.example.spring_security_mernis_auth.model;
+package com.example.spring_security_mernis_auth.dto;
 
 import com.example.spring_security_mernis_auth.enums.Role;
-import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-@Entity
-@Table(name = "users")
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(unique = true)
+public class UserRequestDto {
+    @NotBlank(message = "Username cannot be empty.")
+    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters.")
     private String username;
 
+    @NotBlank(message = "Password cannot be empty.")
+    @Size(min = 6, max = 20, message = "Password must be between 6 and 20 characters.")
     private String password;
+
+    private Long identityNumber;
 
     private String firstName;
 
     private String lastName;
 
+    @Min(value = 1900, message = "Birth Year must be after 1900.")
     private int birthYear;
 
-    private Long identityNumber;
-
-    @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User() {}
 
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getUsername() {
         return username;
@@ -52,6 +41,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Long getIdentityNumber() {
+        return identityNumber;
+    }
+
+    public void setIdentityNumber(Long identityNumber) {
+        this.identityNumber = identityNumber;
     }
 
     public String getFirstName() {
@@ -70,20 +67,13 @@ public class User {
         this.lastName = lastName;
     }
 
+
     public int getBirthYear() {
         return birthYear;
     }
 
     public void setBirthYear(int birthYear) {
         this.birthYear = birthYear;
-    }
-
-    public Long getIdentityNumber() {
-        return identityNumber;
-    }
-
-    public void setIdentityNumber(Long identityNumber) {
-        this.identityNumber = identityNumber;
     }
 
     public Role getRole() {
@@ -96,14 +86,13 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
+        return "LoginRequestDto{" +
+                "username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", identityNumber=" + identityNumber +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", birthYear=" + birthYear +
-                ", identityNumber=" + identityNumber +
                 ", role=" + role +
                 '}';
     }
