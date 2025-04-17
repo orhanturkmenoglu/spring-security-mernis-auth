@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<EasyWSDL>
+  <Info>
+    <Version>9.3.3.2</Version>
+    <AccountType>Basic</AccountType>
+    <LibrariesFolder>easywsdl</LibrariesFolder>
+    <MainClass>RGLKPSPublicSoap</MainClass>
+  </Info>
+  <Settings>
+    <Url>https://tckimlik.nvi.gov.tr/service/kpspublic.asmx?WSDL</Url>
+    <ClassPrefix/>
+    <PackageName>com.example.spring_security_mernis_auth.mernis.service</PackageName>
+    <AddDocumentation>false</AddDocumentation>
+    <EnableAdvancedFeatures>true</EnableAdvancedFeatures>
+    <EnableMTOM>false</EnableMTOM>
+    <EncodeIllegalCharacters>true</EncodeIllegalCharacters>
+    <GenerateAsyncOperations>true</GenerateAsyncOperations>
+    <ImplementSerializable>false</ImplementSerializable>
+    <ImplementParcelable>false</ImplementParcelable>
+    <AddAnyCollection>false</AddAnyCollection>
+    <DateTimeSupport>Default</DateTimeSupport>
+    <Repackage/>
+    <GenerateHtmlDocumentation>false</GenerateHtmlDocumentation>
+    <AddDataSetSupport>false</AddDataSetSupport>
+    <PlatformType>JavaV2</PlatformType>
+    <Annotations>None</Annotations>
+    <AddLibraries>true</AddLibraries>
+    <GenerateGetSetMethods>true</GenerateGetSetMethods>
+    <DetectDictionaries>false</DetectDictionaries>
+  </Settings>
+  <Files>
+    <File>MernisService.java</File>
+    <File>MernisService.java~</File>
+    <File>RGLBinaryObject.java</File>
+    <File>RGLConnectionProvider.java</File>
+    <File>RGLDateTimeParser.java</File>
+    <File>RGLHelper.java</File>
+    <File>RGLKPSPublicSoap.java</File>
+    <File>RGLKPSPublicSoap12.java</File>
+    <File>RGLRequestResultHandler.java</File>
+    <File>RGLResponseData.java</File>
+    <File>RGLSoapException.java</File>
+    <File>RGLStandardDateTimeParser.java</File>
+  </Files>
+  <Libraries/>
+</EasyWSDL>
