@@ -24,9 +24,15 @@ Bu proje, Türkiye Cumhuriyeti vatandaşlarının kimlik doğrulamasını sağla
 
 ## 🧠 Nasıl Çalışır?
 
-1. Kullanıcı giriş formuna TCKN, ad, soyad, doğum yılı ve şifre girer.
-2. `CustomAuthenticationProvider`, bu bilgileri alarak `MernisService` üzerinden TC kimlik numarasının geçerliliğini kontrol eder.
-3. MERNIS doğrulaması başarılıysa, sistem kullanıcıya yetki verir ve giriş işlemi tamamlanır.
+1.Kullanıcı, giriş formuna TCKN, ad, soyad, doğum yılı ve şifre bilgilerini girer.
+
+2. CustomAuthenticationProvider, bu bilgileri alarak yalnızca kullanıcının kimlik bilgilerini doğrulamak için MernisService üzerinden T.C. kimlik numarasının geçerliliğini kontrol eder.
+
+3. Eğer Mernis doğrulaması başarılı olursa, kullanıcı veritabanında kullanıcı adı ve şifre doğrulaması yapılır. Ayrıca, kullanıcının rolü de kontrol edilir; kullanıcı ADMIN veya USER rolüne sahip olmalıdır.
+
+4. Eğer şifre ve rol doğrulaması başarılıysa, sistem kullanıcıya yetki verir ve giriş işlemi tamamlanır.
+
+
 
 ---
 
@@ -46,6 +52,7 @@ Bu proje, Türkiye Cumhuriyeti vatandaşlarının kimlik doğrulamasını sağla
 ```json
 {
   "tckn": "10000000146",
+  "username": "orhanturkmen"
   "firstName": "Orhan",
   "lastName": "Türkmenoğlu",
   "birthYear": 1999,
