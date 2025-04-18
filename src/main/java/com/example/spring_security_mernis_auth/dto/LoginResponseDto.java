@@ -3,6 +3,9 @@ package com.example.spring_security_mernis_auth.dto;
 public class LoginResponseDto {
     private String message;
 
+    public LoginResponseDto() {}
+
+
     public LoginResponseDto(String message) {
         this.message = message;
     }

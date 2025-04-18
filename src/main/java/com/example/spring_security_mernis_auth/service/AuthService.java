@@ -10,6 +10,9 @@ import com.example.spring_security_mernis_auth.mapper.UserMapper;
 import com.example.spring_security_mernis_auth.mernis.service.MernisService;
 import com.example.spring_security_mernis_auth.model.User;
 import com.example.spring_security_mernis_auth.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +27,7 @@ import java.util.Locale;
 @Service
 public class AuthService {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
     private final MernisService mernisService;
 
     private final UserRepository userRepository;
@@ -97,4 +101,19 @@ public class AuthService {
             return new LoginResponseDto("Kullanıcı adı veya sifre yanlis.");
         }
     }
+
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            HttpSession session = request.getSession();
+            if (session != null) {
+                session.invalidate();
+            }
+            SecurityContextHolder.clearContext();
+            return "Cikis basarili.";
+        } catch (Exception e) {
+            log.error("Logout error: {}", e.getMessage());
+            return "Cikis basarisiz.";
+        }
+    }
+
 }
