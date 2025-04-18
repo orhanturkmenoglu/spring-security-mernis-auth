@@ -1,7 +1,11 @@
 package com.example.spring_security_mernis_auth.dto;
 
 import com.example.spring_security_mernis_auth.enums.Role;
+import com.example.spring_security_mernis_auth.model.Authority;
 import jakarta.validation.constraints.Min;
+
+import java.util.List;
+import java.util.Set;
 
 public class UserResponseDto {
 
@@ -14,9 +18,7 @@ public class UserResponseDto {
     @Min(value = 1900, message = "Birth Year must be after 1900.")
     private int birthYear;
 
-    private Role role;
-
-
+    private Set<Authority> authorities;
 
     public Long getIdentityNumber() {
         return identityNumber;
@@ -51,22 +53,23 @@ public class UserResponseDto {
         this.birthYear = birthYear;
     }
 
-    public Role getRole() {
-        return role;
+
+    public Set<Authority> getAuthorities() {
+        return authorities;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setAuthorities(Set<Authority> authorities) {
+        this.authorities = authorities;
     }
 
-    public UserResponseDto() {
-    }
-
-    public UserResponseDto(Long identityNumber, String firstName, String lastName, int birthYear, Role role) {
-        this.identityNumber = identityNumber;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.birthYear = birthYear;
-        this.role = role;
+    @Override
+    public String toString() {
+        return "UserResponseDto{" +
+                "identityNumber=" + identityNumber +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", birthYear=" + birthYear +
+                ", authorities=" + authorities +
+                '}';
     }
 }

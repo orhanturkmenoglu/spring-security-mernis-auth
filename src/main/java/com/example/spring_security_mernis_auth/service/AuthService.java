@@ -8,7 +8,9 @@ import com.example.spring_security_mernis_auth.exception.InvalidTCKNException;
 import com.example.spring_security_mernis_auth.exception.UserAlreadyExistsException;
 import com.example.spring_security_mernis_auth.mapper.UserMapper;
 import com.example.spring_security_mernis_auth.mernis.service.MernisService;
+import com.example.spring_security_mernis_auth.model.Authority;
 import com.example.spring_security_mernis_auth.model.User;
+import com.example.spring_security_mernis_auth.repository.AuthorityRepository;
 import com.example.spring_security_mernis_auth.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,8 +23,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 @Service
 public class AuthService {
@@ -32,26 +37,22 @@ public class AuthService {
 
     private final UserRepository userRepository;
 
+    private final AuthorityRepository authorityRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
 
 
-    public AuthService(MernisService mernisService, UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+    public AuthService(MernisService mernisService, UserRepository userRepository, AuthorityRepository authorityRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
         this.mernisService = mernisService;
         this.userRepository = userRepository;
+        this.authorityRepository = authorityRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
     }
 
-    private User createUser(UserRequestDto userRequestDto) {
-        String encodedPassword = passwordEncoder.encode(userRequestDto.getPassword());
-        User user = UserMapper.mapToUser(userRequestDto);
-        user.setPassword(encodedPassword);
-
-        return user;
-    }
-
+    @Transactional
     public UserResponseDto register(UserRequestDto userRequestDto) throws Exception {
 
         boolean isTcknValid;
@@ -73,11 +74,28 @@ public class AuthService {
             throw new UserAlreadyExistsException("Bu kullanıcı adı zaten mevcut.");
         }
 
-        User user = createUser(userRequestDto);
+
+        String encodedPassword = passwordEncoder.encode(userRequestDto.getPassword());
+        User user = UserMapper.mapToUser(userRequestDto);
+        user.setPassword(encodedPassword);
+
+        Set<Authority> authorities = new HashSet<>();
+
+        for (Authority authority : userRequestDto.getAuthorities()) {
+            authority.setUser(user);
+            authorities.add(authority);
+        }
+
+        user.setAuthorities(authorities);
 
         User savedUser = userRepository.save(user);
 
-        return UserMapper.mapToUserResponseDto(savedUser);
+        authorityRepository.saveAll(authorities);
+
+        UserResponseDto userResponseDto = UserMapper.mapToUserResponseDto(savedUser);
+        userResponseDto.setAuthorities(savedUser.getAuthorities());
+
+        return userResponseDto;
     }
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
@@ -115,5 +133,6 @@ public class AuthService {
             return "Cikis basarisiz.";
         }
     }
+
 
 }

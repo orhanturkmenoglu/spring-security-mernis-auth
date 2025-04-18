@@ -40,7 +40,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
 
         // Kullanıcı rolünü kontrol et
-        if (user.getRole() != Role.ROLE_ADMIN && user.getRole() != Role.ROLE_USER) {
+        if (user.getAuthorities().contains(Role.ADMIN) && user.getAuthorities().contains(Role.USER)) {
             throw new BadCredentialsException("Invalid role. Access denied.");
         }
 

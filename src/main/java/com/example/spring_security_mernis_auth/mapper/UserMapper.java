@@ -15,7 +15,6 @@ public class UserMapper {
         user.setPassword(userRequestDto.getPassword());
         user.setFirstName(userRequestDto.getFirstName());
         user.setLastName(userRequestDto.getLastName());
-        user.setRole(userRequestDto.getRole());
         user.setBirthYear(userRequestDto.getBirthYear());
         user.setIdentityNumber(userRequestDto.getIdentityNumber());
 
@@ -28,7 +27,7 @@ public class UserMapper {
         userResponseDto.setIdentityNumber(user.getIdentityNumber());
         userResponseDto.setFirstName(user.getFirstName());
         userResponseDto.setLastName(user.getLastName());
-        userResponseDto.setRole(user.getRole());
+        userResponseDto.setAuthorities(user.getAuthorities());
         userResponseDto.setBirthYear(user.getBirthYear());
 
         return userResponseDto;

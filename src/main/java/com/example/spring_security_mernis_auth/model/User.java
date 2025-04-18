@@ -1,11 +1,16 @@
 package com.example.spring_security_mernis_auth.model;
 
-import com.example.spring_security_mernis_auth.enums.Role;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
+import java.io.Serializable;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,11 +29,24 @@ public class User {
 
     private Long identityNumber;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
 
-    public User() {}
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Authority> authorities;
 
+    public User() {
+    }
+
+
+    public User(Long id, String username, String password, String firstName, String lastName, int birthYear, Long identityNumber, Set<Authority> authorities) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthYear = birthYear;
+        this.identityNumber = identityNumber;
+        this.authorities = authorities;
+    }
 
     public Long getId() {
         return id;
@@ -86,12 +104,12 @@ public class User {
         this.identityNumber = identityNumber;
     }
 
-    public Role getRole() {
-        return role;
+    public Set<Authority> getAuthorities() {
+        return authorities;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setAuthorities(Set<Authority> authorities) {
+        this.authorities = authorities;
     }
 
     @Override
@@ -104,7 +122,7 @@ public class User {
                 ", lastName='" + lastName + '\'' +
                 ", birthYear=" + birthYear +
                 ", identityNumber=" + identityNumber +
-                ", role=" + role +
+                ", authorities=" + authorities +
                 '}';
     }
 }

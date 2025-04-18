@@ -1,9 +1,12 @@
 package com.example.spring_security_mernis_auth.dto;
 
-import com.example.spring_security_mernis_auth.enums.Role;
+import com.example.spring_security_mernis_auth.model.Authority;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
+import java.util.List;
+import java.util.Set;
 
 public class UserRequestDto {
     @NotBlank(message = "Username cannot be empty.")
@@ -23,9 +26,7 @@ public class UserRequestDto {
     @Min(value = 1900, message = "Birth Year must be after 1900.")
     private int birthYear;
 
-    private Role role;
-
-
+    private Set<Authority> authorities;
 
     public String getUsername() {
         return username;
@@ -76,24 +77,24 @@ public class UserRequestDto {
         this.birthYear = birthYear;
     }
 
-    public Role getRole() {
-        return role;
+    public Set<Authority> getAuthorities() {
+        return authorities;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setAuthorities(Set<Authority> authorities) {
+        this.authorities = authorities;
     }
 
     @Override
     public String toString() {
-        return "LoginRequestDto{" +
+        return "UserRequestDto{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", identityNumber=" + identityNumber +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", birthYear=" + birthYear +
-                ", role=" + role +
+                ", authorities=" + authorities +
                 '}';
     }
 }
