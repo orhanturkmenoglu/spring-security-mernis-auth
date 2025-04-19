@@ -22,6 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,7 +99,7 @@ public class AuthService {
         return userResponseDto;
     }
 
-    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+    public LoginResponseDto login(LoginRequestDto loginRequestDto, HttpServletRequest request) {
 
         if (loginRequestDto.getUsername() == null || loginRequestDto.getPassword() == null) {
             return new LoginResponseDto("Kullanıcı adı veya sifre bos olamaz.");
@@ -113,6 +114,13 @@ public class AuthService {
             }
 
             SecurityContextHolder.getContext().setAuthentication(authenticate);
+
+            HttpSession session = request.getSession(true);
+            session.setAttribute(
+                    HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                    SecurityContextHolder.getContext()
+            );
+
 
             return new LoginResponseDto("Kullanıcı girisi basarili.");
         } catch (Exception e) {
