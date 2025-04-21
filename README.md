@@ -17,6 +17,7 @@ Kullanıcı adı ve şifreye ek olarak **TCKN, ad, soyad ve doğum yılı** gibi
 ## 🚀 Özellikler
 
 - ✅ **JWT Authentication:** Kullanıcı kimlik doğrulaması sonrası güvenli erişim için JWT token üretimi
+- 🛡️ Method Düzeyinde Güvenlik: Spring Security ile method düzeyinde erişim kontrolü sağlanır.
 - 🔐 **MERNIS Entegrasyonu:** Kullanıcının girdiği kimlik bilgileri MERNIS servisi üzerinden doğrulanır.
 - 📦 **Layered Architecture:** Clean Code prensiplerine uygun, servis ve config katmanlarına ayrılmış yapı.
 - 🧪 Test Edilebilirlik:** Kolayca birim testi yapılabilir şekilde esnek tasarım.
