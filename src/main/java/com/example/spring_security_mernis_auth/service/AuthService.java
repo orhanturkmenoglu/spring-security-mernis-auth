@@ -46,14 +46,16 @@ public class AuthService {
 
     private final JwtTokenUtil jwtTokenUtil;
 
+    private final RedisService redisService;
 
-    public AuthService(MernisService mernisService, UserRepository userRepository, AuthorityRepository authorityRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil) {
+    public AuthService(MernisService mernisService, UserRepository userRepository, AuthorityRepository authorityRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, RedisService redisService) {
         this.mernisService = mernisService;
         this.userRepository = userRepository;
         this.authorityRepository = authorityRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.redisService = redisService;
     }
 
     @Transactional
@@ -123,6 +125,7 @@ public class AuthService {
             );
 
             String token = jwtTokenUtil.generateToken(user);
+            redisService.storeToken(token, user.getUsername());
 
             return new LoginResponseDto(token);
         } catch (Exception e) {
