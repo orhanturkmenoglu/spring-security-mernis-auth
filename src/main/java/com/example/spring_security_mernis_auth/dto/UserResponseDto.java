@@ -1,10 +1,8 @@
 package com.example.spring_security_mernis_auth.dto;
 
-import com.example.spring_security_mernis_auth.enums.Role;
 import com.example.spring_security_mernis_auth.model.Authority;
 import jakarta.validation.constraints.Min;
 
-import java.util.List;
 import java.util.Set;
 
 public class UserResponseDto {
