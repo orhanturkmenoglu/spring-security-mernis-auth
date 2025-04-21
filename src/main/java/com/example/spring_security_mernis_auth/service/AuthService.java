@@ -21,8 +21,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,13 +44,16 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
 
+    private final JwtTokenUtil jwtTokenUtil;
 
-    public AuthService(MernisService mernisService, UserRepository userRepository, AuthorityRepository authorityRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+
+    public AuthService(MernisService mernisService, UserRepository userRepository, AuthorityRepository authorityRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil) {
         this.mernisService = mernisService;
         this.userRepository = userRepository;
         this.authorityRepository = authorityRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
     }
 
     @Transactional
@@ -115,14 +118,13 @@ public class AuthService {
 
             SecurityContextHolder.getContext().setAuthentication(authenticate);
 
-            HttpSession session = request.getSession(true);
-            session.setAttribute(
-                    HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                    SecurityContextHolder.getContext()
+            User user = userRepository.findByUsername(loginRequestDto.getUsername()).orElseThrow(
+                    () -> new UsernameNotFoundException("User not found")
             );
 
+            String token = jwtTokenUtil.generateToken(user);
 
-            return new LoginResponseDto("Kullanıcı girisi basarili.");
+            return new LoginResponseDto(token);
         } catch (Exception e) {
             return new LoginResponseDto("Kullanıcı adı veya sifre yanlis.");
         }

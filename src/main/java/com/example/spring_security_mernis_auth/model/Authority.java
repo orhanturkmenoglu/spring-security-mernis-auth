@@ -1,6 +1,5 @@
 package com.example.spring_security_mernis_auth.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -8,7 +7,6 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "authorities")
-
 public class Authority  implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
