@@ -1,6 +1,7 @@
 # Spring Security Mernis Authentication
 
-Bu proje, Türkiye Cumhuriyeti vatandaşlarının kimlik doğrulamasını sağlamak amacıyla **MERNIS Web Servisi** ile entegre çalışan özel bir **Spring Security Custom Authentication Provider** içerir. Kullanıcı adı ve şifreye ek olarak **TCKN, ad, soyad ve doğum yılı** gibi bilgilerle doğrulama işlemi yapılır.
+Bu proje, Türkiye Cumhuriyeti vatandaşlarının kimlik doğrulamasını sağlamak amacıyla MERNIS Web Servisi ile entegre çalışan ve **JWT tabanlı güvenli oturum yönetimi sağlayan özel bir Spring Security** yapısı içerir.
+Kullanıcı adı ve şifreye ek olarak **TCKN, ad, soyad ve doğum yılı** gibi bilgilerle doğrulama yapılır, ardından başarılı girişlerde JWT token üretilir.
 
 ---
 
@@ -15,7 +16,7 @@ Bu proje, Türkiye Cumhuriyeti vatandaşlarının kimlik doğrulamasını sağla
 
 ## 🚀 Özellikler
 
-- ✅ **Custom Authentication Provider:** Spring Security'nin standart yapısını genişleterek özelleştirilmiş doğrulama mekanizması.
+- ✅ **JWT Authentication:** Kullanıcı kimlik doğrulaması sonrası güvenli erişim için JWT token üretimi
 - 🔐 **MERNIS Entegrasyonu:** Kullanıcının girdiği kimlik bilgileri MERNIS servisi üzerinden doğrulanır.
 - 📦 **Layered Architecture:** Clean Code prensiplerine uygun, servis ve config katmanlarına ayrılmış yapı.
 - 🧪 Test Edilebilirlik:** Kolayca birim testi yapılabilir şekilde esnek tasarım.
@@ -23,15 +24,15 @@ Bu proje, Türkiye Cumhuriyeti vatandaşlarının kimlik doğrulamasını sağla
 ---
 
 ## 🧠 Nasıl Çalışır?
+1.Kullanıcı, giriş formuna tckn, ad, soyad, doğum yılı, kullanıcı adı ve şifre bilgilerini girer.
 
-1.Kullanıcı, giriş formuna TCKN, ad, soyad, doğum yılı ve şifre bilgilerini girer.
+2.Bu bilgiler CustomAuthenticationProvider üzerinden alınır ve MernisService ile kimlik doğrulaması yapılır.
 
-2. CustomAuthenticationProvider, bu bilgileri alarak yalnızca kullanıcının kimlik bilgilerini doğrulamak için MernisService üzerinden T.C. kimlik numarasının geçerliliğini kontrol eder.
+3.MERNIS doğrulaması başarılıysa kullanıcı bilgileri veritabanında kontrol edilir.
 
-3. Eğer Mernis doğrulaması başarılı olursa, kullanıcı veritabanında kullanıcı adı ve şifre doğrulaması yapılır. Ayrıca, kullanıcının rolü de kontrol edilir; kullanıcı ADMIN veya USER rolüne sahip olmalıdır.
+4.Kullanıcı adı, şifre ve rol doğrulaması geçerli ise bir JWT token oluşturulur ve kullanıcıya döndürülür.
 
-4. Eğer şifre ve rol doğrulaması başarılıysa, sistem kullanıcıya yetki verir ve giriş işlemi tamamlanır.
-
+5.Kullanıcı sistemdeki tüm korumalı endpoint’lere bu token ile erişim sağlayabilir.
 
 
 ---
@@ -59,14 +60,21 @@ Bu proje, Türkiye Cumhuriyeti vatandaşlarının kimlik doğrulamasını sağla
   "password": "123456"
 }
 
+🛡️ Başarılı giriş sonrası dönen örnek token:
+``json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+
+
 💡 Kimler İçin Faydalı?
-📚 Spring Security öğrenen geliştiriciler
+📚 Spring Security ve JWT öğrenmek isteyen geliştiriciler
 
-🧾 Gerçek kimlik doğrulama servisleriyle proje geliştirenler
+🧾 Gerçek kimlik doğrulama servisleriyle çalışan backend developer’lar
 
-🧪 Custom Authentication yazmak isteyen backend developer'lar
+🧪 Custom Authentication & Token yapısı geliştirmek isteyenler
 
-🇹🇷 Türkiye'deki projelerde TCKN doğrulaması ihtiyacı duyanlar
+🇹🇷 Türkiye projelerinde TCKN doğrulama ihtiyacı duyanlar
 
 
 ✨ Katkıda Bulun
