@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class RedisService {
+public class JwtTokenCacheService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
     @Value("${spring.security.expiration}")
     private long EXPIRATION;
 
-    public RedisService(RedisTemplate<String, String> redisTemplate) {
+    public JwtTokenCacheService(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 

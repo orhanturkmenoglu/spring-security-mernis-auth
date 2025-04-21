@@ -2,7 +2,7 @@ package com.example.spring_security_mernis_auth.filter;
 
 import com.example.spring_security_mernis_auth.service.CustomUserDetailsService;
 import com.example.spring_security_mernis_auth.service.JwtTokenUtil;
-import com.example.spring_security_mernis_auth.service.RedisService;
+import com.example.spring_security_mernis_auth.service.JwtTokenCacheService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,12 +24,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final CustomUserDetailsService customUserDetailsService;
 
-    private final RedisService redisService;
+    private final JwtTokenCacheService jwtTokenCacheService;
 
-    public JwtAuthenticationFilter(JwtTokenUtil jwtTokenUtil, CustomUserDetailsService customUserDetailsService, RedisService redisService) {
+    public JwtAuthenticationFilter(JwtTokenUtil jwtTokenUtil, CustomUserDetailsService customUserDetailsService, JwtTokenCacheService jwtTokenCacheService) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.customUserDetailsService = customUserDetailsService;
-        this.redisService = redisService;
+        this.jwtTokenCacheService = jwtTokenCacheService;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             // Redis üzerinden token kontrolü
-            cachedToken = redisService.getToken(username);  // Redis'ten token al
+            cachedToken = jwtTokenCacheService.getToken(username);  // Redis'ten token al
 
             // Eğer Redis'te token varsa ve gelen token ile eşleşiyorsa
             if (cachedToken != null && cachedToken.equals(token)) {
