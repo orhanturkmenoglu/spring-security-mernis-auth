@@ -61,7 +61,7 @@ Kullanıcı adı ve şifreye ek olarak **TCKN, ad, soyad ve doğum yılı** gibi
 }
 
 🛡️ Başarılı giriş sonrası dönen örnek token:
-```json
+``json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
