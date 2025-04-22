@@ -12,9 +12,6 @@ import com.example.spring_security_mernis_auth.model.Authority;
 import com.example.spring_security_mernis_auth.model.User;
 import com.example.spring_security_mernis_auth.repository.AuthorityRepository;
 import com.example.spring_security_mernis_auth.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -134,8 +131,9 @@ public class AuthService {
     }
 
     public void logout(String token) {
-       token.replace("Bearer ", "");
-       jwtTokenCacheService.deleteToken(token);
+        token.replace("Bearer ", "");
+        jwtTokenCacheService.addToBlacklist(token);
+        SecurityContextHolder.clearContext();
     }
 
 
