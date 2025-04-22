@@ -15,9 +15,11 @@ import com.example.spring_security_mernis_auth.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,7 @@ public class AuthService {
     private final JwtTokenUtil jwtTokenUtil;
 
     private final JwtTokenCacheService jwtTokenCacheService;
+
 
     public AuthService(MernisService mernisService, UserRepository userRepository, AuthorityRepository authorityRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, JwtTokenCacheService jwtTokenCacheService) {
         this.mernisService = mernisService;
@@ -104,7 +107,7 @@ public class AuthService {
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
 
         if (loginRequestDto.getUsername() == null || loginRequestDto.getPassword() == null) {
-            return new LoginResponseDto("Kullanıcı adı veya sifre bos olamaz.");
+            throw new NullPointerException("Kullanıcı adı veya sifre bos olamaz.");
         }
 
         try {
@@ -112,7 +115,7 @@ public class AuthService {
                     new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword()));
 
             if (!authenticate.isAuthenticated()) {
-                return new LoginResponseDto("Kullanıcı adı veya sifre yanlis.");
+                throw new BadCredentialsException("Kullanıcı adı veya sifre yanlis.");
             }
 
             SecurityContextHolder.getContext().setAuthentication(authenticate);
@@ -121,14 +124,31 @@ public class AuthService {
                     () -> new UsernameNotFoundException("User not found")
             );
 
-            String token = jwtTokenUtil.generateToken(user);
-            jwtTokenCacheService.storeToken(token, user.getUsername());
+            String accessToken = jwtTokenUtil.generateAccessToken(user);
+            String refreshToken = jwtTokenUtil.generateRefreshToken(user);
 
-            return new LoginResponseDto(token);
+            jwtTokenCacheService.storeAccessToken(accessToken, user.getUsername());
+            jwtTokenCacheService.storeRefreshToken(refreshToken, user.getUsername());
+
+            return new LoginResponseDto(accessToken, refreshToken);
         } catch (Exception e) {
-            return new LoginResponseDto("Kullanıcı adı veya sifre yanlis.");
+            log.error("Exception: {}", (Object) e.getStackTrace());
+            throw new BadCredentialsException("Kullanıcı adı veya sifre yanlis.");
         }
     }
+
+    public String refreshAccessToken(String refreshToken) {
+        String username = jwtTokenCacheService.getRefreshToken(refreshToken);
+
+        if (username != null && jwtTokenCacheService.isTokenValid(refreshToken)) {
+            User user = userRepository.findByUsername(username).orElseThrow(
+                    () -> new UsernameNotFoundException("User not found"));
+            return jwtTokenUtil.generateAccessToken(user); // Yeni access token'ı oluştur
+        } else {
+            throw new RuntimeException("Invalid or expired refresh token");
+        }
+    }
+
 
     public void logout(String token) {
         token.replace("Bearer ", "");

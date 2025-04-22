@@ -8,12 +8,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,23 +23,36 @@ public class JwtTokenUtil {
     @Value("${spring.security.secret.key}")
     private  String SECRET_KEY;
 
-    @Value("${spring.security.expiration}")
-    private long EXPIRATION;
+    @Value("${spring.security.access.token.expiration}")
+    private long ACCESS_EXPIRATION;
 
+    @Value("${spring.security.refresh.token.expiration}")
+    private long REFRESH_EXPIRATION;
 
-    public String generateToken(User user) {
-        String roles = user.getAuthorities().stream()
+    private String generateToken(Map<String,Object> claims,User user,long expiration) {
+            String roles = user.getAuthorities().stream()
                 .map(Authority::getAuthority) // Örn: "ROLE_USER"
                 .collect(Collectors.joining(","));
 
         return Jwts.builder()
                 .setIssuer("ORHAN TÜRKMENOĞLU")
+                .setClaims(claims)
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION)) // 1 hour
+                .setExpiration(new Date(System.currentTimeMillis() + expiration)) // 1 hour
                 .claim("roles", roles)
                 .signWith(SignatureAlgorithm.HS256,getSigningKey())
                 .compact();
+    }
+
+    public String generateAccessToken(User user){
+        Map<String, Object> claims = new HashMap<>();
+        return generateToken(claims,user, ACCESS_EXPIRATION);
+    }
+
+    public String generateRefreshToken(User user){
+        Map<String, Object> claims = new HashMap<>();
+        return generateToken(claims,user,REFRESH_EXPIRATION);
     }
 
     public String extractUsername(String token) {

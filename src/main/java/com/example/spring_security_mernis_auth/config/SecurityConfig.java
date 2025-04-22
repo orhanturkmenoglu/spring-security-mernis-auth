@@ -41,7 +41,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login",
-                                "/api/v1/auth/logout").permitAll()
+                                "/api/v1/auth/logout","/api/v1/auth/refresh").permitAll()
                         .requestMatchers("/api/v1/users/all").authenticated()
                         .anyRequest().authenticated())
                 .userDetailsService(customUserDetailsService)
@@ -56,7 +56,6 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {

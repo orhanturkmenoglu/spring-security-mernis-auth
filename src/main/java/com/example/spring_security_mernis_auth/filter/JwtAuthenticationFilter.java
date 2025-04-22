@@ -1,8 +1,9 @@
 package com.example.spring_security_mernis_auth.filter;
 
+import com.example.spring_security_mernis_auth.repository.UserRepository;
 import com.example.spring_security_mernis_auth.service.CustomUserDetailsService;
-import com.example.spring_security_mernis_auth.service.JwtTokenUtil;
 import com.example.spring_security_mernis_auth.service.JwtTokenCacheService;
+import com.example.spring_security_mernis_auth.service.JwtTokenUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,11 +26,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
 
     private final JwtTokenCacheService jwtTokenCacheService;
+    private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtTokenUtil jwtTokenUtil, CustomUserDetailsService customUserDetailsService, JwtTokenCacheService jwtTokenCacheService) {
+    public JwtAuthenticationFilter(JwtTokenUtil jwtTokenUtil, CustomUserDetailsService customUserDetailsService, JwtTokenCacheService jwtTokenCacheService, UserRepository userRepository) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.customUserDetailsService = customUserDetailsService;
         this.jwtTokenCacheService = jwtTokenCacheService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -40,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         String token;
         String username;
-        String cachedUsername ;
+        String cachedUsername;
 
         // Authorization header kontrolü
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -54,9 +57,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             // Redis üzerinden token kontrolü
-            cachedUsername  = jwtTokenCacheService.getToken(token);  // Redis'ten token al
+            cachedUsername = jwtTokenCacheService.getAccessToken(token);  // Redis'ten token al
             // Eğer Redis'te token varsa ve gelen token ile eşleşiyorsa
-            if (cachedUsername  != null && cachedUsername .equals(username) && jwtTokenCacheService.isTokenValid(token)) {
+            if (cachedUsername != null && cachedUsername.equals(username) && jwtTokenCacheService.isTokenValid(token)) {
                 // JWT token'ı geçerliyse, userDetails'i yükle
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
@@ -68,7 +71,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
-
         // Diğer filtreleri çalıştır
         filterChain.doFilter(request, response);
     }
