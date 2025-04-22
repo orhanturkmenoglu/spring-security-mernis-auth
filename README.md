@@ -1,4 +1,4 @@
-# Spring Security Mernis Authentication
+# 🛡️ Spring Security Mernis Authentication
 
 Bu proje, Türkiye Cumhuriyeti vatandaşlarının kimlik doğrulamasını sağlamak amacıyla MERNIS Web Servisi ile entegre çalışan ve **JWT tabanlı güvenli oturum yönetimi sağlayan özel bir Spring Security** yapısı içerir.
 Kullanıcı adı ve şifreye ek olarak **TCKN, ad, soyad ve doğum yılı** gibi bilgilerle doğrulama yapılır, ardından başarılı girişlerde JWT token üretilir.
@@ -17,23 +17,30 @@ Kullanıcı adı ve şifreye ek olarak **TCKN, ad, soyad ve doğum yılı** gibi
 ## 🚀 Özellikler
 
 - ✅ **JWT Authentication:** Kullanıcı kimlik doğrulaması sonrası güvenli erişim için JWT token üretimi
-- 🛡️ Method Düzeyinde Güvenlik: Spring Security ile method düzeyinde erişim kontrolü sağlanır.
+- 🛡️ **Method Düzeyinde Güvenlik:** Spring Security ile method düzeyinde erişim kontrolü sağlanır.
+- 💾 **JWT Token Cache:** Token bilgileri Redis benzeri bir yapı ile cache'te tutulur
 - 🔐 **MERNIS Entegrasyonu:** Kullanıcının girdiği kimlik bilgileri MERNIS servisi üzerinden doğrulanır.
 - 📦 **Layered Architecture:** Clean Code prensiplerine uygun, servis ve config katmanlarına ayrılmış yapı.
-- 🧪 Test Edilebilirlik:** Kolayca birim testi yapılabilir şekilde esnek tasarım.
+- 🧪 **Test Edilebilirlik:** Kolayca birim testi yapılabilir şekilde esnek tasarım.
 
 ---
 
 ## 🧠 Nasıl Çalışır?
-1.Kullanıcı, giriş formuna tckn, ad, soyad, doğum yılı, kullanıcı adı ve şifre bilgilerini girer.
+1.Kullanıcı, tckn, ad, soyad, doğum yılı, kullanıcı adı ve şifre bilgilerini göndererek kayıt olur.
 
-2.Bu bilgiler CustomAuthenticationProvider üzerinden alınır ve MernisService ile kimlik doğrulaması yapılır.
+2.AuthService, MERNIS servisi aracılığıyla kimlik bilgilerini doğrular.
 
-3.MERNIS doğrulaması başarılıysa kullanıcı bilgileri veritabanında kontrol edilir.
+3.Geçerli kimlik bilgileri ve kullanıcı adı kontrolü sonrası kullanıcı veritabanına kaydedilir.
 
-4.Kullanıcı adı, şifre ve rol doğrulaması geçerli ise bir JWT token oluşturulur ve kullanıcıya döndürülür.
+4.Giriş yapılırken, kullanıcı adı ve şifre doğrulanır, başarılıysa JWT Access ve Refresh Token oluşturulur.
 
-5.Kullanıcı sistemdeki tüm korumalı endpoint’lere bu token ile erişim sağlayabilir.
+5.Token’lar JwtTokenCacheService üzerinden cache’e alınır.
+
+6.Korunan endpoint’lere erişim, sadece geçerli access token ile sağlanır.
+
+7.refreshAccessToken() metodu ile refresh token kullanılarak yeni access token alınabilir.
+
+8.logout() ile token kara listeye alınır ve oturum kapatılır.
 
 
 ---
@@ -64,7 +71,8 @@ Kullanıcı adı ve şifreye ek olarak **TCKN, ad, soyad ve doğum yılı** gibi
 🛡️ Başarılı giriş sonrası dönen örnek token:
 ``json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 
 
