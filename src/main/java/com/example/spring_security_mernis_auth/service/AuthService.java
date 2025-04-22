@@ -133,10 +133,9 @@ public class AuthService {
         }
     }
 
-    public String logout(String token) {
+    public void logout(String token) {
        token.replace("Bearer ", "");
        jwtTokenCacheService.deleteToken(token);
-       return "Cikis basarili";
     }
 
 
