@@ -57,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             cachedToken = jwtTokenCacheService.getToken(username);  // Redis'ten token al
 
             // Eğer Redis'te token varsa ve gelen token ile eşleşiyorsa
-            if (cachedToken != null && cachedToken.equals(token)) {
+            if (cachedToken != null && cachedToken.equals(token) && jwtTokenCacheService.isTokenValid(token)) {
                 // JWT token'ı geçerliyse, userDetails'i yükle
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 

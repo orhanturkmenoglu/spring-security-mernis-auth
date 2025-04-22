@@ -26,6 +26,11 @@ public class JwtTokenCacheService {
         return redisTemplate.opsForValue().get(username);
     }
 
+    public boolean isTokenValid(String token) {
+        Long expire = redisTemplate.getExpire(token, TimeUnit.SECONDS);
+        return expire != null && expire > 0;
+    }
+
     public void deleteToken(String username) {
         redisTemplate.delete(username);
     }

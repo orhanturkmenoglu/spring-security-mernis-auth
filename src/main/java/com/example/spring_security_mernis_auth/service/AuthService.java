@@ -104,7 +104,7 @@ public class AuthService {
         return userResponseDto;
     }
 
-    public LoginResponseDto login(LoginRequestDto loginRequestDto, HttpServletRequest request) {
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
 
         if (loginRequestDto.getUsername() == null || loginRequestDto.getPassword() == null) {
             return new LoginResponseDto("Kullanıcı adı veya sifre bos olamaz.");
@@ -133,18 +133,10 @@ public class AuthService {
         }
     }
 
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            HttpSession session = request.getSession();
-            if (session != null) {
-                session.invalidate();
-            }
-            SecurityContextHolder.clearContext();
-            return "Cikis basarili.";
-        } catch (Exception e) {
-            log.error("Logout error: {}", e.getMessage());
-            return "Cikis basarisiz.";
-        }
+    public String logout(String token) {
+       token.replace("Bearer ", "");
+       jwtTokenCacheService.deleteToken(token);
+       return "Cikis basarili";
     }
 
 

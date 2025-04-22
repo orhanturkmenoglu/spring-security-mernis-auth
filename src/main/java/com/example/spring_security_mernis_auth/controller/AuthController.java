@@ -6,7 +6,6 @@ import com.example.spring_security_mernis_auth.dto.UserRequestDto;
 import com.example.spring_security_mernis_auth.dto.UserResponseDto;
 import com.example.spring_security_mernis_auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,20 +32,20 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto, HttpServletRequest request) {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
         try {
-            LoginResponseDto response = authService.login(loginRequestDto,request);
+            LoginResponseDto response = authService.login(loginRequestDto);
             return ResponseEntity.ok(response);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(new LoginResponseDto());
         }
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
-        String result = authService.logout(request, response);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
+        token = token.replace("Bearer ", "");
+        authService.logout(token);
+        return ResponseEntity.ok("Logged out");
     }
 
 }
