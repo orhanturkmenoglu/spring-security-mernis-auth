@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         String token;
         String username;
-        String cachedToken;
+        String cachedUsername ;
 
         // Authorization header kontrolü
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -54,10 +54,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             // Redis üzerinden token kontrolü
-            cachedToken = jwtTokenCacheService.getToken(username);  // Redis'ten token al
-
+            cachedUsername  = jwtTokenCacheService.getToken(token);  // Redis'ten token al
             // Eğer Redis'te token varsa ve gelen token ile eşleşiyorsa
-            if (cachedToken != null && cachedToken.equals(token) && jwtTokenCacheService.isTokenValid(token)) {
+            if (cachedUsername  != null && cachedUsername .equals(username) && jwtTokenCacheService.isTokenValid(token)) {
                 // JWT token'ı geçerliyse, userDetails'i yükle
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 

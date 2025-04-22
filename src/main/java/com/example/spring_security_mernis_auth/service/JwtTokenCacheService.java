@@ -19,11 +19,11 @@ public class JwtTokenCacheService {
     }
 
     public void storeToken(String token, String username) {
-        redisTemplate.opsForValue().set(username, token, EXPIRATION, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(token, username, EXPIRATION, TimeUnit.MILLISECONDS);
     }
 
-    public String getToken(String username) {
-        return redisTemplate.opsForValue().get(username);
+    public String getToken(String token) {
+        return redisTemplate.opsForValue().get(token);
     }
 
     public boolean isTokenValid(String token) {
