@@ -11,7 +11,6 @@ import com.example.spring_security_mernis_auth.repository.AuthorityRepository;
 import com.example.spring_security_mernis_auth.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -121,13 +120,27 @@ public class AuthService {
                     () -> new UsernameNotFoundException("User not found")
             );
 
-            String accessToken = jwtTokenUtil.generateAccessToken(user);
-            String refreshToken = jwtTokenUtil.generateRefreshToken(user);
 
-            jwtTokenCacheService.storeAccessToken(accessToken, user.getUsername());
-            jwtTokenCacheService.storeRefreshToken(refreshToken, user.getUsername());
+            String oldAccessToken = jwtTokenCacheService.getAccessToken(user.getUsername());
+            System.out.println("oldAccessToken"+oldAccessToken);
+            String oldRefreshToken = jwtTokenCacheService.getRefreshToken(user.getUsername());
+            System.out.println("oldRefreshToken"+oldRefreshToken);
 
-            return new LoginResponseDto(accessToken, refreshToken);
+            String newAccessToken = jwtTokenUtil.generateAccessToken(user);
+            System.out.println("newAccessToken"+newAccessToken);
+            String newRefreshToken = jwtTokenUtil.generateRefreshToken(user);
+            System.out.println("newRefreshToken"+newRefreshToken);
+
+            if (oldAccessToken != null && oldRefreshToken != null) {
+                jwtTokenCacheService.invalidateOldTokenAndStoreNew(oldAccessToken,
+                        newAccessToken, newRefreshToken,
+                        user.getUsername());
+            }
+
+            jwtTokenCacheService.storeAccessToken(newAccessToken, user.getUsername());
+            jwtTokenCacheService.storeRefreshToken(newRefreshToken, user.getUsername());
+
+            return new LoginResponseDto(newAccessToken, newRefreshToken);
         } catch (Exception e) {
             log.error("Exception: {}", (Object) e.getStackTrace());
             throw new BadCredentialsException("Kullanıcı adı veya sifre yanlis.");
@@ -135,7 +148,7 @@ public class AuthService {
     }
 
 
-    public String updatePassword(UpdatePasswordRequestDto updatePasswordRequestDto){
+    public String updatePassword(UpdatePasswordRequestDto updatePasswordRequestDto) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -148,11 +161,11 @@ public class AuthService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        if (!passwordEncoder.matches(updatePasswordRequestDto.getOldPassword(),user.getPassword())){
+        if (!passwordEncoder.matches(updatePasswordRequestDto.getOldPassword(), user.getPassword())) {
             throw new IllegalArgumentException("Eski sifre yanlis lütfen tekrar deneyiniz !");
         }
 
-        if (!updatePasswordRequestDto.getNewPassword().equals(updatePasswordRequestDto.getConfirmPassword())){
+        if (!updatePasswordRequestDto.getNewPassword().equals(updatePasswordRequestDto.getConfirmPassword())) {
             throw new IllegalArgumentException("Sifreler uyuşmuyor lütfen tekrar deneyiniz !");
         }
 
@@ -166,7 +179,7 @@ public class AuthService {
     public String refreshAccessToken(String refreshToken) {
         String username = jwtTokenCacheService.getRefreshToken(refreshToken);
 
-        if (username != null && jwtTokenCacheService.isTokenValid(refreshToken)) {
+        if (username != null && jwtTokenCacheService.isTokenValid(refreshToken,username)) {
             User user = userRepository.findByUsername(username).orElseThrow(
                     () -> new UsernameNotFoundException("User not found"));
             return jwtTokenUtil.generateAccessToken(user); // Yeni access token'ı oluştur

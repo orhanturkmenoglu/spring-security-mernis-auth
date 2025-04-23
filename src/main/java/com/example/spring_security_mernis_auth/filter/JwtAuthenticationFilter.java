@@ -31,6 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final AntPathMatcher antPathMatcher;
 
+
     private static final List<String> EXCLUDE_URLS = List.of(
             "/api/v1/auth/register",
             "/api/v1/auth/login",
@@ -53,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         String token;
         String username;
-        String cachedUsername;
+        String cachedToken;
 
         // Authorization header kontrolü
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -64,12 +65,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         token = authHeader.substring(7);  // Bearer token'ı çıkar
         username = jwtTokenUtil.extractUsername(token);  // Token'dan kullanıcı adı çıkart
 
+        System.out.println("Token :"+token);
+        System.out.println("Username :"+username);
+
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             // Redis üzerinden token kontrolü
-            cachedUsername = jwtTokenCacheService.getAccessToken(token);  // Redis'ten token al
+            cachedToken  = jwtTokenCacheService.getAccessToken(username);  // Redis'ten token al
+            System.out.println("cachedToken  :"+cachedToken );
             // Eğer Redis'te token varsa ve gelen token ile eşleşiyorsa
-            if (cachedUsername != null && cachedUsername.equals(username) && jwtTokenCacheService.isTokenValid(token)) {
+            if (cachedToken != null && cachedToken.equals(token) && jwtTokenCacheService.isTokenValid(token,username)) {
                 // JWT token'ı geçerliyse, userDetails'i yükle
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
