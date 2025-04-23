@@ -18,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity(debug = true)
 @EnableMethodSecurity
@@ -26,6 +28,19 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private final CustomUserDetailsService customUserDetailsService;
+
+    private final List<String> publicEndpoints = List.of(
+            "/api/v1/auth/login",
+            "/api/v1/auth/register",
+            "/api/v1/auth/logout",
+            "/api/v1/auth/refresh"
+    );
+
+
+    private final List<String> authenticatedEndpoints = List.of(
+            "/api/v1/auth/update-password",
+            "/api/v1/users/all"
+    );
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, CustomUserDetailsService customUserDetailsService) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -40,10 +55,8 @@ public class SecurityConfig {
                         sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login",
-                                "/api/v1/auth/logout","/api/v1/auth/refresh").permitAll()
-                        .requestMatchers("/api/v1/users/all").authenticated()
-                        .requestMatchers("/api/v1/auth/update-password").authenticated()
+                        .requestMatchers(publicEndpoints.toArray(new String[0])).permitAll()
+                        .requestMatchers(authenticatedEndpoints.toArray(new String[0])).authenticated()
                         .anyRequest().authenticated())
                 .userDetailsService(customUserDetailsService)
                 .httpBasic(Customizer.withDefaults())
