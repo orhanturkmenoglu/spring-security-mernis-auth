@@ -18,7 +18,9 @@ Kullanıcı adı ve şifreye ek olarak **TCKN, ad, soyad ve doğum yılı** gibi
 
 - ✅ **JWT Authentication:** Kullanıcı kimlik doğrulaması sonrası güvenli erişim için JWT token üretimi
 - 🛡️ **Method Düzeyinde Güvenlik:** Spring Security ile method düzeyinde erişim kontrolü sağlanır.
-- 💾 **JWT Token Cache:** Token bilgileri Redis benzeri bir yapı ile cache'te tutulur
+- 💾 **JWT Token Cache ve Doğrulama:** Access ve Refresh token'lar Redis üzerinde cache'lenir ve geçerliliği Redis üzerinden kontrol edilir.
+- 🔁 **Token Kara Listeleme:** Çıkış yapan veya geçersiz hale gelen token'lar Redis üzerinde kara listeye alınır.
+- ♻️ **Refresh Token ile Yenileme:** Geçerli bir refresh token ile yeni access token alınabilir
 - 🔐 **MERNIS Entegrasyonu:** Kullanıcının girdiği kimlik bilgileri MERNIS servisi üzerinden doğrulanır.
 - 📦 **Layered Architecture:** Clean Code prensiplerine uygun, servis ve config katmanlarına ayrılmış yapı.
 - 🧪 **Test Edilebilirlik:** Kolayca birim testi yapılabilir şekilde esnek tasarım.
@@ -26,22 +28,25 @@ Kullanıcı adı ve şifreye ek olarak **TCKN, ad, soyad ve doğum yılı** gibi
 ---
 
 ## 🧠 Nasıl Çalışır?
-1.Kullanıcı, tckn, ad, soyad, doğum yılı, kullanıcı adı ve şifre bilgilerini göndererek kayıt olur.
+1. Kayıt Olma: Kullanıcı, TCKN, ad, soyad, doğum yılı, kullanıcı adı ve şifre bilgileriyle sisteme kayıt olur.
 
-2.AuthService, MERNIS servisi aracılığıyla kimlik bilgilerini doğrular.
+2. Kimlik Doğrulama: AuthService, MERNIS Web Servisi aracılığıyla kullanıcının TCKN bilgilerini doğrular.
 
-3.Geçerli kimlik bilgileri ve kullanıcı adı kontrolü sonrası kullanıcı veritabanına kaydedilir.
+3. Kullanıcı Kaydı: Geçerli kimlik bilgileri ile kullanıcı veritabanına kaydedilir.
 
-4.Giriş yapılırken, kullanıcı adı ve şifre doğrulanır, başarılıysa JWT Access ve Refresh Token oluşturulur.
+4. Giriş Yapma: Kullanıcı adı ve şifre doğrulandıktan sonra, başarılı bir giriş yapılır ve JWT Access ve Refresh Token oluşturulur.
 
-5.Token’lar JwtTokenCacheService üzerinden cache’e alınır.
+5. Token Cache: Oluşturulan token'lar JwtTokenCacheService aracılığıyla Redis'e cache edilir ve her ikisi de Redis üzerinde saklanır.
 
-6.Korunan endpoint’lere erişim, sadece geçerli access token ile sağlanır.
+6. Token Geçerliliği Kontrolü: Kullanıcı, korunan endpoint'lere her erişim sağladığında, gönderilen Access Token Redis üzerinden kontrol edilerek geçerliliği doğrulanır.
 
-7.refreshAccessToken() metodu ile refresh token kullanılarak yeni access token alınabilir.
+7. Expire Süresi: Token'ların geçerlilik süresi Redis üzerinden kontrol edilir.
 
-8.logout() ile token kara listeye alınır ve oturum kapatılır.
+7. Kara Liste Kontrolü: Token, geçerliliği devam ediyorsa Redis'teki kara liste kontrol edilir. Eğer token kara listede değilse, erişim sağlanabilir.
 
+8. Access Token Yenileme: Refresh Token kullanılarak yeni bir Access Token alınabilir. refreshAccessToken() metodu bu işlemi yönetir.
+
+9. Çıkış Yapma: logout() metodu çağrıldığında, kullanıcının Access Token ve Refresh Token'ı Redis kara listesini eklenir ve geçersiz hale getirilir. Böylece oturum kapatılır.
 
 ---
 
