@@ -1,6 +1,5 @@
 package com.example.spring_security_mernis_auth.filter;
 
-import com.example.spring_security_mernis_auth.repository.UserRepository;
 import com.example.spring_security_mernis_auth.service.CustomUserDetailsService;
 import com.example.spring_security_mernis_auth.service.JwtTokenCacheService;
 import com.example.spring_security_mernis_auth.service.JwtTokenUtil;
@@ -14,9 +13,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
+import reactor.util.annotation.NonNull;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -26,13 +28,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
 
     private final JwtTokenCacheService jwtTokenCacheService;
-    private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtTokenUtil jwtTokenUtil, CustomUserDetailsService customUserDetailsService, JwtTokenCacheService jwtTokenCacheService, UserRepository userRepository) {
+    private final AntPathMatcher antPathMatcher;
+
+    private static final List<String> EXCLUDE_URLS = List.of(
+            "/api/v1/auth/register",
+            "/api/v1/auth/login",
+            "/api/v1/auth/logout",
+            "/api/v1/auth/refresh"
+    );
+
+    public JwtAuthenticationFilter(JwtTokenUtil jwtTokenUtil, CustomUserDetailsService customUserDetailsService, JwtTokenCacheService jwtTokenCacheService) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.customUserDetailsService = customUserDetailsService;
         this.jwtTokenCacheService = jwtTokenCacheService;
-        this.userRepository = userRepository;
+        this.antPathMatcher = new AntPathMatcher();
     }
 
     @Override
@@ -73,5 +83,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         // Diğer filtreleri çalıştır
         filterChain.doFilter(request, response);
+    }
+
+
+    @Override
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
+        return EXCLUDE_URLS.stream().anyMatch(url -> antPathMatcher.match(url, request.getServletPath()));
     }
 }

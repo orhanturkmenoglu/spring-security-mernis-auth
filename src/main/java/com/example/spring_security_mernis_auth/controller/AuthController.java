@@ -1,16 +1,13 @@
 package com.example.spring_security_mernis_auth.controller;
 
-import com.example.spring_security_mernis_auth.dto.LoginRequestDto;
-import com.example.spring_security_mernis_auth.dto.LoginResponseDto;
-import com.example.spring_security_mernis_auth.dto.UserRequestDto;
-import com.example.spring_security_mernis_auth.dto.UserResponseDto;
+import com.example.spring_security_mernis_auth.dto.*;
 import com.example.spring_security_mernis_auth.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -53,5 +50,14 @@ public class AuthController {
         authService.logout(token);
         return ResponseEntity.ok("Logged out");
     }
+
+    @PutMapping("/update-password")
+    public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordRequestDto updatePasswordRequestDto){
+        String updatePassword = authService.updatePassword(updatePasswordRequestDto);
+        return ResponseEntity.ok(updatePassword);
+    }
+
+
+
 
 }

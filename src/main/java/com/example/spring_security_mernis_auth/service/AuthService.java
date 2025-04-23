@@ -1,9 +1,6 @@
 package com.example.spring_security_mernis_auth.service;
 
-import com.example.spring_security_mernis_auth.dto.LoginRequestDto;
-import com.example.spring_security_mernis_auth.dto.LoginResponseDto;
-import com.example.spring_security_mernis_auth.dto.UserRequestDto;
-import com.example.spring_security_mernis_auth.dto.UserResponseDto;
+import com.example.spring_security_mernis_auth.dto.*;
 import com.example.spring_security_mernis_auth.exception.InvalidTCKNException;
 import com.example.spring_security_mernis_auth.exception.UserAlreadyExistsException;
 import com.example.spring_security_mernis_auth.mapper.UserMapper;
@@ -14,12 +11,12 @@ import com.example.spring_security_mernis_auth.repository.AuthorityRepository;
 import com.example.spring_security_mernis_auth.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -135,6 +132,35 @@ public class AuthService {
             log.error("Exception: {}", (Object) e.getStackTrace());
             throw new BadCredentialsException("Kullanıcı adı veya sifre yanlis.");
         }
+    }
+
+
+    public String updatePassword(UpdatePasswordRequestDto updatePasswordRequestDto){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+            throw new IllegalStateException("Kimlik doğrulama boş veya kimlik doğrulanmamıştır.");
+        }
+
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (!passwordEncoder.matches(updatePasswordRequestDto.getOldPassword(),user.getPassword())){
+            throw new IllegalArgumentException("Eski sifre yanlis lütfen tekrar deneyiniz !");
+        }
+
+        if (!updatePasswordRequestDto.getNewPassword().equals(updatePasswordRequestDto.getConfirmPassword())){
+            throw new IllegalArgumentException("Sifreler uyuşmuyor lütfen tekrar deneyiniz !");
+        }
+
+
+        user.setPassword(passwordEncoder.encode(updatePasswordRequestDto.getNewPassword()));
+        userRepository.save(user);
+
+        return "Sifre guncellendi";
     }
 
     public String refreshAccessToken(String refreshToken) {
