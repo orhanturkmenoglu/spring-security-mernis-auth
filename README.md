@@ -10,7 +10,6 @@ Kullanıcı adı ve şifreye ek olarak **TCKN, ad, soyad ve doğum yılı** gibi
 
 Projeyi lokal ortamınızda çalıştırmak için aşağıdaki adımları izleyin:
 
-```bash
 # Projeyi klonlayın
 git clone https://github.com/orhanturkmenoglu/spring-security-mernis-auth.git
 
