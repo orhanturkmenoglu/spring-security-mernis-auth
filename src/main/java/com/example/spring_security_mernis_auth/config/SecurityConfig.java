@@ -33,13 +33,14 @@ public class SecurityConfig {
             "/api/v1/auth/login",
             "/api/v1/auth/register",
             "/api/v1/auth/logout",
-            "/api/v1/auth/refresh-token"
+            "/api/v1/auth/refresh-token",
+            "/api/v1/users/**"
     );
 
 
     private final List<String> authenticatedEndpoints = List.of(
-            "/api/v1/auth/update-password",
-            "/api/v1/users/all"
+            "/api/v1/auth/update-password"
+
     );
 
     private final List<String> adminOnlyEndpoints = List.of(
