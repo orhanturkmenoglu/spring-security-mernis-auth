@@ -176,13 +176,32 @@ public class AuthService {
         return "Sifre guncellendi";
     }
 
-    public String refreshAccessToken(String refreshToken) {
+    public LoginResponseDto refreshAccessToken(String refreshToken) {
+
         String username = jwtTokenCacheService.getRefreshToken(refreshToken);
 
-        if (username != null && jwtTokenCacheService.isTokenValid(refreshToken,username)) {
-            User user = userRepository.findByUsername(username).orElseThrow(
-                    () -> new UsernameNotFoundException("User not found"));
-            return jwtTokenUtil.generateAccessToken(user); // Yeni access token'ı oluştur
+        if (username == null) {
+            throw new RuntimeException("Invalid refresh token");
+        }
+        System.out.println("refreshAccessToken: " + username);
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        System.out.println("User :"+user);
+
+        if (jwtTokenCacheService.isRefreshTokenValid(refreshToken,user.getUsername())) {
+            String newRefreshAccessToken = jwtTokenUtil.generateAccessToken(user);
+            String newRefreshRefreshToken = jwtTokenUtil.generateRefreshToken(user);
+
+            jwtTokenCacheService.invalidateOldTokenAndStoreNew(refreshToken,
+                    newRefreshAccessToken, newRefreshRefreshToken,
+                    user.getUsername());
+
+            jwtTokenCacheService.storeAccessToken(newRefreshAccessToken, user.getUsername());
+            jwtTokenCacheService.storeRefreshToken(newRefreshRefreshToken, user.getUsername());
+
+            return new LoginResponseDto(newRefreshAccessToken, newRefreshRefreshToken);
+            // yeni access token oluştu.
         } else {
             throw new RuntimeException("Invalid or expired refresh token");
         }

@@ -5,8 +5,6 @@ import com.example.spring_security_mernis_auth.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -40,9 +38,9 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<String> refreshAccessToken(@RequestHeader("Refresh-Token") String refreshToken) {
-        String newAccessToken = authService.refreshAccessToken(refreshToken);
-        return ResponseEntity.ok(newAccessToken);
+    public ResponseEntity<LoginResponseDto> refreshAccessToken(@RequestHeader("Authorization") String refreshToken) {
+        LoginResponseDto refreshedAccessToken = authService.refreshAccessToken(refreshToken);
+        return ResponseEntity.ok(refreshedAccessToken);
     }
 
     @PostMapping("/logout")
@@ -52,12 +50,10 @@ public class AuthController {
     }
 
     @PutMapping("/update-password")
-    public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordRequestDto updatePasswordRequestDto){
+    public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordRequestDto updatePasswordRequestDto) {
         String updatePassword = authService.updatePassword(updatePasswordRequestDto);
         return ResponseEntity.ok(updatePassword);
     }
-
-
 
 
 }
