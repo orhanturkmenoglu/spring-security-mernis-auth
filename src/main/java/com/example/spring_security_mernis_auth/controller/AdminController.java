@@ -22,7 +22,7 @@ public class AdminController {
      * Bütün JWT tokenlarını Redis'den siler.
      * Sadece username 'admin' olan ya da ROLE_ADMIN yetkisine sahip kullanıcılar erişebilir.
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("authentication.principal.username == 'admin' || hasRole('ADMIN')")
     @DeleteMapping("/delete-all-keys")
     public ResponseEntity<String> deleteAllKeys() {
         try {
