@@ -11,6 +11,7 @@ import com.example.spring_security_mernis_auth.repository.AuthorityRepository;
 import com.example.spring_security_mernis_auth.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -122,14 +123,14 @@ public class AuthService {
 
 
             String oldAccessToken = jwtTokenCacheService.getAccessToken(user.getUsername());
-            System.out.println("oldAccessToken"+oldAccessToken);
+            System.out.println("oldAccessToken" + oldAccessToken);
             String oldRefreshToken = jwtTokenCacheService.getRefreshToken(user.getUsername());
-            System.out.println("oldRefreshToken"+oldRefreshToken);
+            System.out.println("oldRefreshToken" + oldRefreshToken);
 
             String newAccessToken = jwtTokenUtil.generateAccessToken(user);
-            System.out.println("newAccessToken"+newAccessToken);
+            System.out.println("newAccessToken" + newAccessToken);
             String newRefreshToken = jwtTokenUtil.generateRefreshToken(user);
-            System.out.println("newRefreshToken"+newRefreshToken);
+            System.out.println("newRefreshToken" + newRefreshToken);
 
             if (oldAccessToken != null && oldRefreshToken != null) {
                 jwtTokenCacheService.invalidateOldTokenAndStoreNew(oldAccessToken,
@@ -188,7 +189,7 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 
-        if (jwtTokenCacheService.isRefreshTokenValid(refreshToken,user.getUsername())) {
+        if (jwtTokenCacheService.isRefreshTokenValid(refreshToken, user.getUsername())) {
             String newRefreshAccessToken = jwtTokenUtil.generateAccessToken(user);
             String newRefreshRefreshToken = jwtTokenUtil.generateRefreshToken(user);
 
@@ -204,6 +205,11 @@ public class AuthService {
         } else {
             throw new RuntimeException("Invalid or expired refresh token");
         }
+    }
+
+
+    public void deleteAllKeys() {
+        jwtTokenCacheService.deleteAllKeys();
     }
 
 

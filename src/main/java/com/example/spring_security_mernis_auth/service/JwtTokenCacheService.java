@@ -80,6 +80,11 @@ public class JwtTokenCacheService {
         redisTemplate.delete("refresh:" + refreshToken);
     }
 
+    public void deleteAllKeys() {
+        redisTemplate.delete(redisTemplate.keys("access:*"));
+        redisTemplate.delete(redisTemplate.keys("refresh:*"));
+        redisTemplate.delete(redisTemplate.keys("BLACKLISTED"));
+    }
 
     public void invalidateOldTokenAndStoreNew(String oldToken, String newAccessToken, String newRefreshToken, String username) {
         addToBlacklist(oldToken);

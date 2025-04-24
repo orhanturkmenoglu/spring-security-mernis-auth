@@ -54,6 +54,4 @@ public class AuthController {
         String updatePassword = authService.updatePassword(updatePasswordRequestDto);
         return ResponseEntity.ok(updatePassword);
     }
-
-
 }

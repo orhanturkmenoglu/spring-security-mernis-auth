@@ -42,6 +42,10 @@ public class SecurityConfig {
             "/api/v1/users/all"
     );
 
+    private final List<String> adminOnlyEndpoints = List.of(
+            "/api/v1/admin/**"
+    );
+
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, CustomUserDetailsService customUserDetailsService) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.customUserDetailsService = customUserDetailsService;
@@ -57,6 +61,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(publicEndpoints.toArray(new String[0])).permitAll()
                         .requestMatchers(authenticatedEndpoints.toArray(new String[0])).authenticated()
+                        .requestMatchers(adminOnlyEndpoints.toArray(new String[0])).hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .userDetailsService(customUserDetailsService)
                 .httpBasic(Customizer.withDefaults())
