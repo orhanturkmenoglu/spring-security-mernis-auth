@@ -16,7 +16,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     public List<UserResponseDto> getAllUsers() {
         return userRepository.findAll()
                 .stream()
