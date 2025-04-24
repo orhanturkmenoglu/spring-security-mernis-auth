@@ -46,62 +46,50 @@ public class JwtTokenCacheService {
         String cachedToken = getAccessToken(username);
 
         if (cachedToken == null || !cachedToken.equals(token)) {
-            System.out.println("Token geçersiz veya eşleşmiyor.");
             return false;
         }
 
         Long expire = redisTemplate.getExpire("access:" + username, TimeUnit.SECONDS);
-        System.out.println("Expire süresi: " + expire);
 
         return expire != null && expire > 0 && !isTokenBlackListed(token);
     }
 
-    public boolean isRefreshTokenValid(String token, String username) {
-        String cachedUsername = getRefreshToken(token);
-        System.out.println("cachedRefreshToken :" + cachedUsername
-        );
+    public boolean isRefreshTokenValid(String refreshToken, String username) {
+        String cachedUsername = getRefreshToken(refreshToken);
+
         if (cachedUsername == null || !cachedUsername.equals(username)) {
             System.out.println("Token geçersiz veya eşleşmiyor.");
             return false;
         }
 
-        Long expire = redisTemplate.getExpire("refresh:" + token, TimeUnit.SECONDS);
-        System.out.println("Expire Süresi: " + expire);
+        Long expire = redisTemplate.getExpire("refresh:" + refreshToken, TimeUnit.SECONDS);
 
         return expire != null && expire > 0;
     }
 
 
     public boolean isTokenBlackListed(String token) {
-        System.out.println("isTokenBlackListed" + token);
         return redisTemplate.opsForSet().isMember("BLACKLISTED", token);
     }
 
     public void deleteAccessToken(String username) {
-        System.out.println("deleteAccessToken" + username);
         redisTemplate.delete("access:" + username);
     }
 
-    public void deleteRefreshToken(String username) {
-        System.out.println("deleteRefreshToken" + username);
-        redisTemplate.delete("refresh:" + username);
+    public void deleteRefreshToken(String refreshToken) {
+        redisTemplate.delete("refresh:" + refreshToken);
     }
 
 
     public void invalidateOldTokenAndStoreNew(String oldToken, String newAccessToken, String newRefreshToken, String username) {
-        System.out.println("oldToken" + oldToken);
         addToBlacklist(oldToken);
 
-        System.out.println("deleteAccessToken :" + oldToken);
         deleteAccessToken(oldToken);
 
-        System.out.println("deleteRefreshToken :" + username);
-        deleteRefreshToken(username);
+        deleteRefreshToken(oldToken);
 
-        System.out.println("newAccessToken :" + username);
         storeAccessToken(newAccessToken, username);
 
-        System.out.println("newRefreshToken :" + username);
         storeRefreshToken(newRefreshToken, username);
     }
 
