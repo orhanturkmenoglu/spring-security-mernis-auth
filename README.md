@@ -8,12 +8,11 @@ Kullanıcı adı ve şifreye ek olarak **TCKN, ad, soyad ve doğum yılı** gibi
 
 📁 Projeyi Çalıştırmak
 
-```
 git clone [https://github.com/orhanturkmenoglu/spring-security-mernis-auth.git](https://github.com/orhanturkmenoglu/spring-security-mernis-auth.git)
 
  cd spring-security-mernis-auth
 
- mvn clean install  ```
+ mvn clean install  
 
 
 ## 🚀 Özellikler
