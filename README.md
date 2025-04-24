@@ -6,13 +6,28 @@ Kullanıcı adı ve şifreye ek olarak **TCKN, ad, soyad ve doğum yılı** gibi
 ---
 
 
-📁 Projeyi Çalıştırmak
+## 📁 Projeyi Çalıştırmak
 
-git clone [https://github.com/orhanturkmenoglu/spring-security-mernis-auth.git](https://github.com/orhanturkmenoglu/spring-security-mernis-auth.git)
+Projeyi lokal ortamınızda çalıştırmak için aşağıdaki adımları izleyin:
 
- cd spring-security-mernis-auth
+```bash
+# Projeyi klonlayın
+git clone https://github.com/orhanturkmenoglu/spring-security-mernis-auth.git
 
- mvn clean install  
+# Proje dizinine geçin
+cd spring-security-mernis-auth
+
+# Maven ile projeyi derleyin
+mvn clean install
+
+Redis servisini başlatmadan uygulamayı çalıştırmadan önce aşağıdaki Docker komutu ile Redis'i ayağa kaldırın:
+ 
+### 2. Redis Servisini Başlatın
+
+Redis’in çalıştığından emin olun. Aşağıdaki komutu kullanarak Docker üzerinden Redis’i başlatabilirsiniz:
+
+```bash
+docker run -d -p 6379:6379 --name redis redis
 
 
 ## 🚀 Özellikler
