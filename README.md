@@ -26,7 +26,7 @@ Redis servisini başlatmadan uygulamayı çalıştırmadan önce aşağıdaki Do
 
 Redis’in çalıştığından emin olun. Aşağıdaki komutu kullanarak Docker üzerinden Redis’i başlatabilirsiniz:
 
-```bash
+
 docker run -d -p 6379:6379 --name redis redis
 
 
