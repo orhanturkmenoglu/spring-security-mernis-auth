@@ -9,6 +9,7 @@ import com.example.spring_security_mernis_auth.model.Authority;
 import com.example.spring_security_mernis_auth.model.User;
 import com.example.spring_security_mernis_auth.repository.AuthorityRepository;
 import com.example.spring_security_mernis_auth.repository.UserRepository;
+import io.jsonwebtoken.lang.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -146,12 +147,6 @@ public class AuthService {
         }
     }
 
-    private Authentication authenticateUser(LoginRequestDto loginRequestDto) {
-        return authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword())
-        );
-    }
-
 
     public String updatePassword(UpdatePasswordRequestDto updatePasswordRequestDto) {
 
@@ -218,10 +213,15 @@ public class AuthService {
 
 
     public void logout(String token) {
-        token.replace("Bearer ", "");
+        Strings.replace(token, "Bearer ", "");
         jwtTokenCacheService.addToBlacklist(token);
         SecurityContextHolder.clearContext();
     }
 
+    private Authentication authenticateUser(LoginRequestDto loginRequestDto) {
+        return authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword())
+        );
+    }
 
 }
