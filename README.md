@@ -36,6 +36,9 @@ docker run -d -p 6379:6379 --name redis redis
 - 🔐 **MERNIS Entegrasyonu:** Kullanıcının girdiği kimlik bilgileri MERNIS servisi üzerinden doğrulanır.
 - 📦 **Layered Architecture:** Clean Code prensiplerine uygun, servis ve config katmanlarına ayrılmış yapı.
 - 🧪 **Test Edilebilirlik:** Kolayca birim testi yapılabilir şekilde esnek tasarım.
+- 🛠️ **Flyway Migrasyonları:** Veritabanı şemasındaki değişiklikler Flyway aracılığıyla yönetilir ve veritabanı migrasyonları uygulama sırasında otomatik olarak gerçekleştirilir.
+
+
 
 ---
 
@@ -70,6 +73,7 @@ docker run -d -p 6379:6379 --name redis redis
 - SOAP WebService (MERNIS)
 - Lombok
 - Maven
+- Flyway
 
 ---
 
