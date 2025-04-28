@@ -11,7 +11,6 @@ import com.example.spring_security_mernis_auth.repository.AuthorityRepository;
 import com.example.spring_security_mernis_auth.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -108,8 +107,7 @@ public class AuthService {
         }
 
         try {
-            Authentication authenticate = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword()));
+            Authentication authenticate = authenticateUser(loginRequestDto);
 
             if (!authenticate.isAuthenticated()) {
                 throw new BadCredentialsException("Kullanıcı adı veya sifre yanlis.");
@@ -146,6 +144,12 @@ public class AuthService {
             log.error("Exception: {}", (Object) e.getStackTrace());
             throw new BadCredentialsException("Kullanıcı adı veya sifre yanlis.");
         }
+    }
+
+    private Authentication authenticateUser(LoginRequestDto loginRequestDto) {
+        return authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword())
+        );
     }
 
 
