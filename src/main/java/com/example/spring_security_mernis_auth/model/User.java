@@ -3,6 +3,7 @@ package com.example.spring_security_mernis_auth.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -17,14 +18,19 @@ public class User implements Serializable {
     private String username;
 
     private String password;
-
+    private String email;
     private String firstName;
 
     private String lastName;
 
     private int birthYear;
 
+
     private Long identityNumber;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -34,15 +40,30 @@ public class User implements Serializable {
     }
 
 
-    public User(Long id, String username, String password, String firstName, String lastName, int birthYear, Long identityNumber, Set<Authority> authorities) {
+    public User(Long id, String username, String password, String email, String firstName, String lastName, int birthYear, Long identityNumber, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Authority> authorities) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthYear = birthYear;
         this.identityNumber = identityNumber;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.authorities = authorities;
+    }
+
+
+    @PrePersist
+    public void init() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void update() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -110,4 +131,27 @@ public class User implements Serializable {
     }
 
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

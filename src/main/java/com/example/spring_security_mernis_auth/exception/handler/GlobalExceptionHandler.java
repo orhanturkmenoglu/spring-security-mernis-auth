@@ -2,6 +2,7 @@ package com.example.spring_security_mernis_auth.exception.handler;
 
 import com.example.spring_security_mernis_auth.exception.InvalidTCKNException;
 import com.example.spring_security_mernis_auth.exception.UserAlreadyExistsException;
+import com.example.spring_security_mernis_auth.exception.UserEmailAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,8 +21,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT); // 409 HTTP kodu
     }
 
+    @ExceptionHandler(UserEmailAlreadyExistsException.class)
+    public ResponseEntity<String> handleUserEmailAlreadyExistsException(UserEmailAlreadyExistsException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT); // 409 HTTP kodu
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGlobalException(Exception ex) {
         return new ResponseEntity<>("Bir hata oluştu: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); // 500 HTTP kodu
     }
+
+
 }

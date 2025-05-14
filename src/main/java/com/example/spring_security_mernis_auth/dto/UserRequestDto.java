@@ -1,11 +1,11 @@
 package com.example.spring_security_mernis_auth.dto;
 
 import com.example.spring_security_mernis_auth.model.Authority;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.util.List;
 import java.util.Set;
 
 public class UserRequestDto {
@@ -17,10 +17,18 @@ public class UserRequestDto {
     @Size(min = 6, max = 20, message = "Password must be between 6 and 20 characters.")
     private String password;
 
+    @NotBlank(message = "Email cannot be empty.")
+    @Email(message = "Invalid email format.")
+    private String email;
+
     private Long identityNumber;
 
+    @NotBlank(message = "First name cannot be empty.")
+    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters.")
     private String firstName;
 
+    @NotBlank(message = "Last name cannot be empty.")
+    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters.")
     private String lastName;
 
     @Min(value = 1900, message = "Birth Year must be after 1900.")
@@ -85,11 +93,20 @@ public class UserRequestDto {
         this.authorities = authorities;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public String toString() {
         return "UserRequestDto{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
                 ", identityNumber=" + identityNumber +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

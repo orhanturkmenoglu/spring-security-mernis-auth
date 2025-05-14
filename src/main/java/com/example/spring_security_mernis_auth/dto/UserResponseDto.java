@@ -1,8 +1,8 @@
 package com.example.spring_security_mernis_auth.dto;
 
 import com.example.spring_security_mernis_auth.model.Authority;
-import jakarta.validation.constraints.Min;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 public class UserResponseDto {
@@ -13,10 +13,16 @@ public class UserResponseDto {
 
     private String lastName;
 
-    @Min(value = 1900, message = "Birth Year must be after 1900.")
     private int birthYear;
 
+    private String email;
+
     private Set<Authority> authorities;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
 
     public Long getIdentityNumber() {
         return identityNumber;
@@ -60,14 +66,30 @@ public class UserResponseDto {
         this.authorities = authorities;
     }
 
-    @Override
-    public String toString() {
-        return "UserResponseDto{" +
-                "identityNumber=" + identityNumber +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", birthYear=" + birthYear +
-                ", authorities=" + authorities +
-                '}';
+
+    public String getEmail() {
+        return email;
     }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+
 }

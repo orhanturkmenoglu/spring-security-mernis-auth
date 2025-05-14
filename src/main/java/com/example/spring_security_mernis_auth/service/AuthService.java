@@ -3,6 +3,7 @@ package com.example.spring_security_mernis_auth.service;
 import com.example.spring_security_mernis_auth.dto.*;
 import com.example.spring_security_mernis_auth.exception.InvalidTCKNException;
 import com.example.spring_security_mernis_auth.exception.UserAlreadyExistsException;
+import com.example.spring_security_mernis_auth.exception.UserEmailAlreadyExistsException;
 import com.example.spring_security_mernis_auth.mapper.UserMapper;
 import com.example.spring_security_mernis_auth.mernis.service.MernisService;
 import com.example.spring_security_mernis_auth.model.Authority;
@@ -44,8 +45,9 @@ public class AuthService {
 
     private final JwtTokenCacheService jwtTokenCacheService;
 
+    private final EmailNotificationService emailNotificationService;
 
-    public AuthService(MernisService mernisService, UserRepository userRepository, AuthorityRepository authorityRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, JwtTokenCacheService jwtTokenCacheService) {
+    public AuthService(MernisService mernisService, UserRepository userRepository, AuthorityRepository authorityRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, JwtTokenCacheService jwtTokenCacheService, EmailNotificationService emailNotificationService) {
         this.mernisService = mernisService;
         this.userRepository = userRepository;
         this.authorityRepository = authorityRepository;
@@ -53,6 +55,7 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.jwtTokenCacheService = jwtTokenCacheService;
+        this.emailNotificationService = emailNotificationService;
     }
 
     @Transactional
@@ -77,6 +80,10 @@ public class AuthService {
             throw new UserAlreadyExistsException("Bu kullanıcı adı zaten mevcut.");
         }
 
+        if (userRepository.existsByEmail(userRequestDto.getEmail())) {
+            throw new UserEmailAlreadyExistsException("Bu email zaten mevcut.");
+        }
+
 
         String encodedPassword = passwordEncoder.encode(userRequestDto.getPassword());
         User user = UserMapper.mapToUser(userRequestDto);
@@ -94,6 +101,8 @@ public class AuthService {
         User savedUser = userRepository.save(user);
 
         authorityRepository.saveAll(authorities);
+
+        emailNotificationService.addEmailSubscriber(savedUser.getEmail());
 
         UserResponseDto userResponseDto = UserMapper.mapToUserResponseDto(savedUser);
         userResponseDto.setAuthorities(savedUser.getAuthorities());
@@ -121,6 +130,7 @@ public class AuthService {
             );
 
 
+
             String oldAccessToken = jwtTokenCacheService.getAccessToken(user.getUsername());
             System.out.println("oldAccessToken" + oldAccessToken);
             String oldRefreshToken = jwtTokenCacheService.getRefreshToken(user.getUsername());
@@ -139,6 +149,8 @@ public class AuthService {
 
             jwtTokenCacheService.storeAccessToken(newAccessToken, user.getUsername());
             jwtTokenCacheService.storeRefreshToken(newRefreshToken, user.getUsername());
+
+            emailNotificationService.sendLoginNotificationEmail(user.getEmail());
 
             return new LoginResponseDto(newAccessToken, newRefreshToken);
         } catch (Exception e) {
