@@ -158,8 +158,6 @@ public class AuthService {
             throw new BadCredentialsException("Kullanıcı adı veya sifre yanlis.");
         }
     }
-
-
     public String updatePassword(UpdatePasswordRequestDto updatePasswordRequestDto) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
